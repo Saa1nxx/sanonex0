@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Новости</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Основные стили */
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #eeeeee;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Верхняя полоса с логотипом */
+    header {
+      background-color: white;
+      padding: 5px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      height: 60px;
+      border-radius: 10px;
+    }
+
+    .logo {
+      width: 40px;
+      height: auto;
+      user-select: none; /* Запрет выделения */
+    }
+
+    /* Кнопки входа и регистрации */
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .auth-button {
+      padding: 5px 15px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .auth-button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Контейнер для боковой панели и новостей */
+    .content {
+      display: flex;
+      margin-top: 20px; /* Увеличен отступ от верхней полосы */
+      flex: 1;
+    }
+
+    /* Левая панель */
+    .sidebar {
+      background-color: white;
+      width: 200px;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      height: calc(100vh - 90px); /* Высота с учётом верхней полосы */
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border-radius: 10px;
+    }
+
+    .sidebar h3 {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+
+    .sidebar .filter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    .sidebar .filter:hover {
+      background-color: #f0f0f0;
+    }
+
+    .sidebar .filter img {
+      width: 20px;
+      height: auto;
+    }
+
+    /* Поиск */
+    .search {
+      display: flex;
+      align-items: center;
+      background-color: #f5f5f5;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .search img {
+      width: 20px;
+      height: auto;
+      margin-right: 10px;
+    }
+
+    .search input {
+      border: none;
+      background: none;
+      outline: none;
+      width: 100%;
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Полоса новостей */
+    .news-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(100vh - 90px); /* Высота с учётом верхней полосы */
+    }
+
+    .news-item {
+      background: white;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    .news-item h4 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .news-item p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .news-item .time {
+      font-size: 12px;
+      color: #999;
+      text-align: right;
+    }
+
+    /* Скрытое описание новости */
+    .news-description {
+      display: none;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* Кнопка "Подробнее" и "Скрыть" */
+    .collapse-btn {
+      font-size: 14px;
+      color: #007BFF;
+      cursor: pointer;
+      margin-top: 10px;
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid #007BFF;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+
+    .collapse-btn:hover {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    .collapse-btn:focus {
+      outline: none;
+    }
+
+    /* Лайк кнопка */
+    .like-btn {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .like-btn img {
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+    }
+
+    .like-btn span {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Верхняя полоса -->
+  <header>
+    <img src="logo.png" alt="Логотип" class="logo">
+    <div class="auth-buttons">
+      <button class="auth-button" onclick="openSignUp()">Sign Up</button>
+      <button class="auth-button" onclick="openLogIn()">Log In</button>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <div class="content">
+    <!-- Левая панель -->
+    <div class="sidebar">
+      <h3>ФИЛЬТР ЛЕНТЫ</h3>
+      <div class="filter" onclick="showAllNews()">
+        <img src="ico1.png" alt="Иконка">
+        <span>Все новости</span>
+      </div>
+      <div class="filter" onclick="showNewestNews()">
+        <img src="ico2.png" alt="Иконка">
+        <span>Самые новые</span>
+      </div>
+
+      <!-- Поиск -->
+      <div class="search">
+        <img src="ico3.png" alt="Поиск">
+        <input type="text" id="search" placeholder="Поиск новостей...">
+      </div>
+    </div>
+
+    <!-- Полоса новостей -->
+    <div class="news-container" id="newsContainer">
+      <!-- Новости будут загружаться через JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    // Массив новостей с данными
+    const newsData = [
+      {
+        title: "Прошли переговоры между Украиной и Россией под кодовым названием Кириешки",
+        description: "Россия предложила провести переговоры, но Зеленский приказал расхуярить Москву в нахуй кпкпкупокпоувпквгпквгпроквгпорвмпвпврпмовпгвкопмвгпомвгпрвправгпврпгврпавправпвгпвпгвгпварпвагрпрвагпрвагпрвпгварпавгпрваправпгвапвпавгр",
+        time: "2024-11-29 16:00",
+        date: "29 Ноября, 2024",
+        likes: 0
+      },
+      {
+        title: "Не безизвестный Барсук Евгений недавно был замечен...",
+        description: "29 ноября в Ингульце, был недавно замечен известный...",
+        time: "2024-11-29 14:30",
+        date: "29 Ноября, 2024",
+        likes: 0
+      },
+      {
+        title: "Саня кончил на 5-ти летнюю девочку",
+        description: "Читайте подробнее!",
+        time: "2024-11-28 12:15",
+        date: "28 Ноября, 2024",
+        likes: 0
+      }
+    ];
+
+    // Пользовательские данные (для примера)
+    let loggedIn = false; // Статус пользователя
+    let likedNews = []; // Массив для отслеживания лайков
+
+    // Функции для отображения новостей
+    function loadNews() {
+      const newsContainer = document.getElementById("newsContainer");
+      newsContainer.innerHTML = ''; // Очистить контейнер
+
+      newsData.forEach((news, index) => {
+        const newsItem = document.createElement("div");
+        newsItem.classList.add("news-item");
+
+        const newsTitle = document.createElement("h4");
+        newsTitle.textContent = news.title;
+
+        const newsDescription = document.createElement("p");
+        newsDescription.textContent = news.description;
+
+        const newsTime = document.createElement("p");
+        newsTime.classList.add("time");
+        newsTime.textContent = news.time;
+
+        const likeBtn = document.createElement("div");
+        likeBtn.classList.add("like-btn");
+        const likeIcon = document.createElement("img");
+        likeIcon.src = likedNews.includes(index) ? "liked.png" : "like.png";
+        likeIcon.alt = "Лайк";
+        const likeText = document.createElement("span");
+        likeText.textContent = likedNews.includes(index) ? "Лайкнут" : "Лайк";
+
+        likeBtn.appendChild(likeIcon);
+        likeBtn.appendChild(likeText);
+        likeBtn.onclick = () => handleLike(index);
+
+        newsItem.appendChild(newsTitle);
+        newsItem.appendChild(newsDescription);
+        newsItem.appendChild(newsTime);
+        newsItem.appendChild(likeBtn);
+
+        newsContainer.appendChild(newsItem);
+      });
+    }
+
+// Обработчик лайков
+function handleLike(index) {
+  if (!loggedIn) {
+    alert("Пожалуйста, войдите в систему для лайков.");
+    return;
+  }
+
+  if (likedNews.includes(index)) {
+    alert("Вы уже лайкнули эту новость.");
+    return;
+  }
+
+  likedNews.push(index);
+  newsData[index].likes += 1;
+  loadNews(); // Перезагружаем новости для отображения обновлений
+}
+
+// Функции для отображения новостей
+function loadNews() {
+  const newsContainer = document.getElementById("newsContainer");
+  newsContainer.innerHTML = ''; // Очистить контейнер
+
+  newsData.forEach((news, index) => {
+    const newsItem = document.createElement("div");
+    newsItem.classList.add("news-item");
+
+    const newsTitle = document.createElement("h4");
+    newsTitle.textContent = news.title;
+
+    const newsDescription = document.createElement("p");
+    newsDescription.textContent = news.description;
+
+    const newsTime = document.createElement("p");
+    newsTime.classList.add("time");
+    newsTime.textContent = news.time;
+
+    const likeBtn = document.createElement("div");
+    likeBtn.classList.add("like-btn");
+    const likeIcon = document.createElement("img");
+    likeIcon.src = likedNews.includes(index) ? "ico4.png" : "ico4.png"; // Использование ico4.png для лайков
+    likeIcon.alt = "Лайк";
+    const likeText = document.createElement("span");
+    likeText.textContent = likedNews.includes(index) ? "Лайкнут" : "Лайк";
+
+    likeBtn.appendChild(likeIcon);
+    likeBtn.appendChild(likeText);
+    likeBtn.onclick = () => handleLike(index);
+
+    newsItem.appendChild(newsTitle);
+    newsItem.appendChild(newsDescription);
+    newsItem.appendChild(newsTime);
+    newsItem.appendChild(likeBtn);
+
+    newsContainer.appendChild(newsItem);
+  });
+}
+
+    // Инициализация
+    loadNews();
+  </script>
+</body>
+</html>
